@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.widget.FrameLayout;
 public class BubbleLayout extends FrameLayout {
 
     public static float DEFAULT_STROKE_WIDTH = -1;
+    public static int DEFAULT_COLOR_SHADOW = Color.argb(90,0,0,0);
 
     private ArrowDirection mArrowDirection;
     private Bubble mBubble;
@@ -27,6 +29,13 @@ public class BubbleLayout extends FrameLayout {
     private int mBubbleColor;
     private float mStrokeWidth;
     private int mStrokeColor;
+
+    private int mShadowRadius;
+    private int mShadowOffsetX;
+    private int mShadowOffsetY;
+    private int mShadowColor;
+
+    private int mInset;
 
     public BubbleLayout(Context context) {
         this(context, null, 0);
@@ -56,6 +65,14 @@ public class BubbleLayout extends FrameLayout {
         int location = a.getInt(R.styleable.BubbleLayout_bl_arrowDirection, ArrowDirection.LEFT.getValue());
         mArrowDirection = ArrowDirection.fromInt(location);
 
+        // Drop Shadow
+        mShadowRadius = a.getInt(R.styleable.BubbleLayout_bl_shadow_radius, 0);
+        mShadowOffsetX = a.getInt(R.styleable.BubbleLayout_bl_shadow_offset_x, 0);
+        mShadowOffsetY = a.getInt(R.styleable.BubbleLayout_bl_shadow_offset_y, 0);
+        mShadowColor = a.getColor(R.styleable.BubbleLayout_bl_shadow_color, DEFAULT_COLOR_SHADOW);
+
+        mInset = a.getInt(R.styleable.BubbleLayout_bl_inset, 10);
+
         a.recycle();
         initPadding();
     }
@@ -63,7 +80,7 @@ public class BubbleLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        initDrawable(0, getWidth(), 0, getHeight());
+        initDrawable(0, getWidth(), 0, getHeight() - 2*mInset);
     }
 
     @Override
@@ -75,7 +92,7 @@ public class BubbleLayout extends FrameLayout {
     private void initDrawable(int left, int right, int top, int bottom) {
         if (right < left || bottom < top) return;
 
-        RectF rectF = new RectF(left, top, right, bottom);
+        RectF rectF = new RectF(left, top, right, bottom + 2*mInset);
         switch(mArrowDirection) {
             case LEFT_CENTER:
             case RIGHT_CENTER:
@@ -88,7 +105,9 @@ public class BubbleLayout extends FrameLayout {
                 break;
         }
         mBubble = new Bubble(rectF, mArrowWidth, mCornersRadius, mArrowHeight, mArrowPosition,
-                mStrokeWidth, mStrokeColor, mBubbleColor, mArrowDirection);
+                mStrokeWidth, mStrokeColor, mBubbleColor, mArrowDirection, mInset, mShadowRadius,
+                mShadowOffsetX, mShadowOffsetY, mShadowColor);
+        setLayerType(LAYER_TYPE_SOFTWARE, mBubble.getPaint());
     }
 
     private void initPadding() {
@@ -213,6 +232,36 @@ public class BubbleLayout extends FrameLayout {
         return this;
     }
 
+    public BubbleLayout setInset(int inset) {
+        mInset = inset;
+        requestLayout();
+        return this;
+    }
+
+    public BubbleLayout setShadowRadius(int shadowRadius) {
+        mShadowRadius = shadowRadius;
+        requestLayout();
+        return this;
+    }
+
+    public BubbleLayout setShadowOffsetX(int shadowOffsetX) {
+        mShadowOffsetX = shadowOffsetX;
+        requestLayout();
+        return this;
+    }
+
+    public BubbleLayout setShadowOffsetY(int shadowOffsetY) {
+        mShadowOffsetY = shadowOffsetY;
+        requestLayout();
+        return this;
+    }
+
+    public BubbleLayout setShadowColor(int shadowColor) {
+        mShadowColor = shadowColor;
+        requestLayout();
+        return this;
+    }
+
     public ArrowDirection getArrowDirection() {
         return mArrowDirection;
     }
@@ -244,4 +293,14 @@ public class BubbleLayout extends FrameLayout {
     public int getStrokeColor() {
         return mStrokeColor;
     }
+
+    public int getInset() { return mInset; }
+
+    public int getShadowRadius() { return mShadowRadius; }
+
+    public int getShadowOffsetX() { return mShadowOffsetX; }
+
+    public int getShadowOffsetY() { return mShadowOffsetY; }
+
+    public int getShadowColor() { return mShadowColor; }
 }

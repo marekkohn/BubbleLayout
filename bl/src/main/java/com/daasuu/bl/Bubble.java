@@ -1,6 +1,7 @@
 package com.daasuu.bl;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -24,8 +25,17 @@ class Bubble extends Drawable {
     private float mArrowHeight;
     private float mArrowPosition;
     private float mStrokeWidth;
+    private int mInset;
 
-    public Bubble(RectF rect, float arrowWidth, float cornersRadius, float arrowHeight, float arrowPosition, float strokeWidth, int strokeColor, int bubbleColor, ArrowDirection arrowDirection) {
+    private int mShadowRadius;
+    private int mShadowOffsetX;
+    private int mShadowOffsetY;
+    private int mShadowColor;
+
+    public Bubble(RectF rect, float arrowWidth, float cornersRadius, float arrowHeight,
+                  float arrowPosition, float strokeWidth, int strokeColor, int bubbleColor,
+                  ArrowDirection arrowDirection, int inset, int shadowRadius, int shadowOffsetX,
+                  int shadowOffsetY, int shadowColor) {
         this.mRect = rect;
 
         this.mArrowWidth = arrowWidth;
@@ -33,8 +43,16 @@ class Bubble extends Drawable {
         this.mArrowHeight = arrowHeight;
         this.mArrowPosition = arrowPosition;
         this.mStrokeWidth = strokeWidth;
+        this.mInset = inset;
+
+        this.mShadowRadius = shadowRadius;
+        this.mShadowOffsetX = shadowOffsetX;
+        this.mShadowOffsetY = shadowOffsetY;
+        this.mShadowColor = shadowColor;
 
         mPaint.setColor(bubbleColor);
+        mPaint.setAntiAlias(true);
+        mPaint.setShadowLayer(mShadowRadius, mShadowOffsetX, mShadowOffsetY, mShadowColor);
 
         if (strokeWidth > 0) {
             mStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -46,6 +64,10 @@ class Bubble extends Drawable {
         } else {
             initPath(arrowDirection, mPath, 0);
         }
+    }
+
+    public Paint getPaint() {
+        return mPaint;
     }
 
     @Override
@@ -87,6 +109,7 @@ class Bubble extends Drawable {
     }
 
     private void initPath(ArrowDirection arrowDirection, Path path, float strokeWidth) {
+        RectF mRect = new RectF(this.mRect.left, this.mRect.top, this.mRect.right, this.mRect.bottom - mInset);
         switch (arrowDirection) {
             case LEFT:
             case LEFT_CENTER:

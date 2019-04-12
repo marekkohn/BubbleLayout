@@ -9,6 +9,13 @@
         <attr name="bl_strokeWidth" format="dimension|reference" />
         <attr name="bl_strokeColor" format="color|reference" />
 
+        <attr name="bl_shadow_radius" format="integer|reference" />
+        <attr name="bl_shadow_offset_x" format="integer|reference" />
+        <attr name="bl_shadow_offset_y" format="integer|reference" />
+        <attr name="bl_shadow_color" format="color|reference" />
+
+        <attr name="bl_inset" format="integer|reference" />
+
         <attr name="bl_arrowDirection" format="enum">
             <enum name="left" value="0" />
             <enum name="right" value="1" />
